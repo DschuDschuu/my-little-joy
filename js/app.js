@@ -160,19 +160,49 @@
     s += '<br>' + usableLabel(open) + (used ? ' · ' + used + ' already used' : '');
     $('moreStats').innerHTML = s;
 
-    var acts = Store.activities().length;
-    $('habitsCount').textContent = acts + (acts === 1 ? ' Aktion bearbeiten' : ' Aktionen bearbeiten');
+    $('habitsCount').textContent = String(Store.activities().length);
 
     $('worldInfo').innerHTML = WORLD.emoji + ' ' + WORLD.name +
       (Store.data.run > 1 ? ' · Durchlauf ' + Store.data.run : '') +
       (n >= Store.WORLD_SIZE ? '<br>Komplett ♡' : '');
   }
 
+  /* Aktionen im Sheet. Was heute schon gesammelt wurde, ist blasser und
+     traegt den Hinweis - bleibt aber antippbar, weil zweimal Fahrrad oder
+     morgens und abends dehnen echte Faelle sind. */
   function renderActs() {
     $('acts').innerHTML = Store.activities().map(function (a) {
-      return '<button class="act" data-act="' + esc(a.id) + '">' +
-        '<span class="act__emoji">' + esc(a.emoji) + '</span><span>' + esc(a.label) + '</span></button>';
+      var done = Store.addedToday(a.id);
+      return '<div class="act-row" data-row="' + esc(a.id) + '">' +
+        '<button class="act' + (done ? ' act--done' : '') + '" data-act="' + esc(a.id) + '">' +
+          '<span class="act__emoji">' + esc(a.emoji) + '</span>' +
+          '<span class="act__text">' + esc(a.label) +
+            (done ? '<em class="act__note">heute schon gesammelt</em>' : '') +
+          '</span>' +
+        '</button></div>';
     }).join('');
+  }
+
+  /* Zweites Antippen einer schon gesammelten Aktion: kurze Rueckfrage
+     direkt in der Zeile, kein zusaetzliches Overlay. */
+  function askAgain(row, activityId) {
+    clearAsk();
+    row.classList.add('is-asking');
+    var bar = document.createElement('div');
+    bar.className = 'act-confirm';
+    bar.innerHTML =
+      '<span class="act-confirm__q">Noch einmal?</span>' +
+      '<button class="act-confirm__yes" data-yes="' + esc(activityId) + '">Ja ♡</button>' +
+      '<button class="act-confirm__no">Nein</button>';
+    row.appendChild(bar);
+  }
+
+  function clearAsk() {
+    Array.prototype.forEach.call($('acts').querySelectorAll('.act-row.is-asking'), function (r) {
+      r.classList.remove('is-asking');
+      var b = r.querySelector('.act-confirm');
+      if (b) b.remove();
+    });
   }
 
   function renderAll(opts) {
@@ -205,12 +235,35 @@
   /* ── sheet ─────────────────────────────────────────────────── */
 
   var sheet = $('sheet');
-  $('btnAdd').addEventListener('click', function () { openLayer(sheet); });
+
+  $('btnAdd').addEventListener('click', function () {
+    clearAsk();
+    hideUndo();
+    renderActs();          // "heute schon gesammelt" beim Öffnen frisch
+    openLayer(sheet);
+  });
 
   sheet.addEventListener('click', function (e) {
-    if (e.target.hasAttribute('data-close')) { closeLayer(sheet); return; }
+    if (e.target.hasAttribute('data-close')) { closeLayer(sheet); clearAsk(); return; }
+
+    var no = e.target.closest('.act-confirm__no');
+    if (no) { clearAsk(); return; }
+
+    var yes = e.target.closest('.act-confirm__yes');
+    if (yes) {
+      if (!busy) collect(yes.getAttribute('data-yes'), yes);
+      return;
+    }
+
     var b = e.target.closest('.act');
-    if (b && !busy) collect(b.getAttribute('data-act'), b);
+    if (!b || busy) return;
+
+    var id = b.getAttribute('data-act');
+    if (b.classList.contains('act--done')) {
+      askAgain(b.closest('.act-row'), id);   // erst fragen
+      return;
+    }
+    collect(id, b);
   });
 
   /* ── Sticker fliegt in die Welt ────────────────────────────── */
@@ -251,19 +304,52 @@
 
   function collect(activityId, sourceEl) {
     busy = true;
+    clearAsk();
+    hideUndo();
     closeLayer(sheet);
     flyToWorld(sourceEl).then(function () {
       var n = Store.addSticker(activityId);
-      renderAll({ pulse: true });
+      renderAll({ pulse: true, highlightNew: true });
       busy = false;
 
       if (Store.isUnlockMoment(n)) {
         setTimeout(function () { unlockJoy(n); }, 1400);
       } else if (n >= Store.WORLD_SIZE && !Store.data.completeAsked) {
         setTimeout(function () { showWorldDone('complete'); }, 1400);
+      } else {
+        /* Kein Rueckgaengig, wenn gleich eine Joy Card oder das Welt-Ende
+           kommt - die Karte waere sonst schon gezogen. */
+        showUndo();
       }
     });
   }
+
+  /* ── Rückgängig: kurzes Zurück für den Fehltipp ────────────── */
+
+  var undoTimer = null;
+
+  function showUndo() {
+    var bar = $('undoBar');
+    bar.hidden = false;
+    requestAnimationFrame(function () { bar.classList.add('is-open'); });
+    clearTimeout(undoTimer);
+    undoTimer = setTimeout(hideUndo, 6500);
+  }
+
+  function hideUndo() {
+    clearTimeout(undoTimer);
+    var bar = $('undoBar');
+    if (bar.hidden) return;
+    bar.classList.remove('is-open');
+    setTimeout(function () { bar.hidden = true; }, 400);
+  }
+
+  $('btnUndo').addEventListener('click', function () {
+    hideUndo();
+    if (!Store.removeLastSticker()) return;
+    renderAll();
+    toast('Zurückgenommen ♡', null, 2200);
+  });
 
   /* ── joy unlock ────────────────────────────────────────────── */
 

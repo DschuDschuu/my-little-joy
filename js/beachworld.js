@@ -537,6 +537,7 @@ window.BeachWorld = (function () {
     mount.innerHTML = MARKUP.replace(/mlj([A-Za-z]+)/g, 'mlj$1' + u);
     var nodes = mount.querySelectorAll('.bwi');
     var pulseTimer = null;
+    var glowTimer = null;
     var last = -1;
 
     return {
@@ -544,10 +545,29 @@ window.BeachWorld = (function () {
       render: function (count, opts) {
         opts = opts || {};
         mount.style.setProperty('--rev', n(revealPct(count)) + '%');
+
+        var fresh = [];
         for (var i = 0; i < nodes.length; i++) {
-          if (count >= +nodes[i].getAttribute('data-at')) nodes[i].classList.add('on');
+          var at = +nodes[i].getAttribute('data-at');
+          if (count >= at) nodes[i].classList.add('on');
           else nodes[i].classList.remove('on');
+          nodes[i].classList.remove('is-new');
+          if (at === count) fresh.push(nodes[i]);
         }
+
+        /* Kurzer warmer Schein am gerade aufgetauchten Element, damit man
+           sieht, WAS neu ist. Nur beim tatsaechlichen Hinzufuegen - beim
+           Start oder nach einem Import wuerde sonst alles gleichzeitig
+           leuchten. */
+        if (opts.highlightNew && fresh.length) {
+          clearTimeout(glowTimer);
+          void mount.offsetWidth;
+          fresh.forEach(function (el) { el.classList.add('is-new'); });
+          glowTimer = setTimeout(function () {
+            fresh.forEach(function (el) { el.classList.remove('is-new'); });
+          }, 1800);
+        }
+
         if (opts.pulse && count !== last) {
           mount.classList.remove('is-pulsing');
           void mount.offsetWidth;

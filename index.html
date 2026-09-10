@@ -25,7 +25,6 @@
         <span class="hero__mark">🐚</span>
         <h1 class="hero__title">MY LITTLE JOY</h1>
         <p class="hero__sub">Nothing is required.<br>Everything counts.</p>
-        <div class="level-pill">🌿 LEVEL 1 · GROUNDING</div>
       </header>
 
       <div class="card card--collect" id="collectCard" hidden>
@@ -103,28 +102,30 @@
         <h1 class="hero__title">MORE</h1>
       </header>
 
+      <!-- ── Anpassen: Level + Aktionen gehoeren zusammen ── -->
       <div class="card pad">
-        <h2 class="section-title">Dein Level</h2>
-        <p class="level">LEVEL 1 – GROUNDING 🌱</p>
-        <p class="muted">Ganz niedrigschwellig: Essen, Ruhe, gemütliche Abende.
-          Weitere Level kommen irgendwann dazu – freiwillig, nie als Aufgabe.</p>
+        <h2 class="section-title">Anpassen</h2>
+        <div class="settings">
+          <div class="setting">
+            <span class="setting__label">Level</span>
+            <span class="setting__value">LEVEL 1 · GROUNDING 🌱</span>
+          </div>
+          <button class="setting setting--btn" id="btnHabitsOpen">
+            <span class="setting__label">Aktionen</span>
+            <span class="setting__value" id="habitsCount">–</span>
+            <span class="setting__chev">›</span>
+          </button>
+        </div>
+        <p class="muted setting__hint">
+          Die Aktionen bestimmen, <b>was zählt</b> – das Level, <b>was du dafür
+          bekommst</b>. Das Level selbst auszuwählen kommt später; dann gibt es
+          eigene Joy Cards für CARE 🌸, MOVE 🌿 und EXPLORE 🌊.
+        </p>
       </div>
 
       <div class="card pad">
         <h2 class="section-title">Deine Sammlung</h2>
         <p class="muted" id="moreStats">–</p>
-      </div>
-
-      <!-- ── eigene Aktionen ── -->
-      <div class="card pad">
-        <h2 class="section-title">Meine Aktionen</h2>
-        <p class="muted">Was zählt, entscheidest du.</p>
-        <div class="row">
-          <button class="btn-soft btn-soft--wide" id="btnHabitsOpen">
-            <span id="habitsCount">–</span>
-            <span class="btn-soft__chev">›</span>
-          </button>
-        </div>
       </div>
 
       <!-- ── Welt ── -->
@@ -269,6 +270,12 @@
 </div>
 
 <div class="fx-layer" id="fxLayer" aria-hidden="true"></div>
+
+<!-- kurzes Zurueck fuer den Fehltipp - verschwindet von allein -->
+<div class="undo-bar" id="undoBar" hidden>
+  <button class="undo-bar__btn" id="btnUndo">Rückgängig</button>
+</div>
+
 <div class="toast" id="toast" hidden></div>
 
 <script src="js/activities.js"></script>

@@ -7,6 +7,11 @@ Eine kleine, ruhige Self-Care-Webapp. Kein Habit Tracker, keine To-do-Liste,
 kein Produktivitätstool. Sie macht nur sichtbar, was du sowieso schon für dich
 getan hast – und lässt dich danach wieder in Ruhe.
 
+**Live: https://dschudschuu.github.io/my-little-joy/**
+
+In Chrome auf dem Handy öffnen → Menü ⋮ → *Installieren*. Dann liegt sie als
+Icon auf dem Startbildschirm, startet im Vollbild und funktioniert offline.
+
 ---
 
 ## Starten
@@ -22,6 +27,34 @@ powershell -ExecutionPolicy Bypass -File .\dev-server.ps1
 ```
 
 Danach `http://localhost:8123` öffnen.
+
+---
+
+## Deployment
+
+Gehostet auf **GitHub Pages**, Quelle `main` / Wurzelverzeichnis. Ein Push
+genügt:
+
+```bash
+git push
+```
+
+GitHub baut automatisch (ca. 30–60 Sekunden), danach liegt die neue Version
+unter der Live-Adresse. Die installierte App holt sie beim **nächsten Öffnen**
+von selbst – der Service Worker arbeitet *network-first*. Nichts neu
+installieren, nichts neu laden.
+
+Bei Änderungen an Dateien aus der `FILES`-Liste in `sw.js` dort `CACHE`
+hochzählen (`mylittlejoy-v2` → `-v3`), damit alte Kopien sicher verschwinden.
+
+Rollback, falls eine Version kaputt ist:
+
+```bash
+git revert HEAD && git push
+```
+
+Die gesammelten Sticker überleben das – sie hängen am localStorage der
+Domain, nicht an der Version der App.
 
 ---
 
@@ -74,6 +107,11 @@ einmal belegt (`buildItems()` stellt das sicher).
 | **100** | *große Szene:* goldenes Licht, Blumenwiese, große Muschel |
 
 Aktuell: 14 Elemente am Himmel, 15 im Wasser, 71 am Strand.
+
+Das gerade aufgetauchte Element bekommt für 1,8 s einen warmen äußeren
+Schein, damit man bei 100 Teilen sieht, *was* neu ist. Der feuert
+ausschließlich beim tatsächlichen Hinzufügen (`render(n, {highlightNew:true})`)
+– beim Start oder nach einem Import würde sonst alles gleichzeitig leuchten.
 
 Himmel und Meer liegen immer oberhalb der Schleierkante – deshalb dürfen
 Flugzeuge, Drachen, Luftmatratzen und Boote zu jedem beliebigen Zeitpunkt
@@ -134,6 +172,14 @@ aufweichen:
 * die Aktivitätenliste erscheint erst nach Tippen auf den Button
 * auf Home steht keine Gesamtzahl – nur die Blüten. Die Zahl gibt es
   im World-Reiter, wenn man sie sehen möchte.
+* auf Home steht auch kein Level. Home ist Beach World plus ein Button,
+  sonst nichts. Das Level lebt unter *More → Anpassen*.
+* „heute schon gesammelt" ist ein **Hinweis, keine Sperre**. Die Aktion
+  bleibt antippbar (zweimal Fahrrad, morgens und abends dehnen sind echte
+  Fälle) – es kommt nur eine kurze Rückfrage.
+* Ein Levelwechsel wird nie kommentiert. Kein Glückwunsch beim Hochgehen,
+  kein Bedauern beim Runtergehen, keine Statistik darüber. Ein Level, das
+  man erreichen kann, muss man genauso selbstverständlich verlassen können.
 
 Zwei bewusste Ausnahmen von der „ruhigen" Grundregel, beide gewünscht:
 
@@ -191,6 +237,12 @@ gezogen, die freigeschaltet sind. Level 2–4 sind im Konzept vorgesehen
 ## Gespeicherte Daten
 
 Alles liegt unter dem localStorage-Schlüssel `mylittlejoy.v1`:
+
+Aus den Zeitstempeln (`t`) leitet die App ab, was **heute** schon gesammelt
+wurde – Tagesgrenze ist die lokale Mitternacht (`Store.dayKey()`).
+`Store.removeLastSticker()` nimmt den letzten Sticker für das kurze
+„Rückgängig" zurück; bei einem Joy-Card-Moment wird es bewusst nicht
+angeboten, weil die Karte dann schon gezogen ist.
 
 ```json
 {

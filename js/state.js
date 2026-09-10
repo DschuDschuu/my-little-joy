@@ -66,6 +66,34 @@ window.Store = (function () {
     return count();
   }
 
+  /* Nimmt den letzten Sticker zurück (kurzes "Rückgängig" nach dem
+     Hinzufügen). Gibt zurück, ob etwas entfernt wurde. */
+  function removeLastSticker() {
+    if (!data.stickers.length) return false;
+    data.stickers.pop();
+    save();
+    return true;
+  }
+
+  /* Tagesgrenze: lokale Mitternacht. */
+  function dayKey(ts) {
+    var d = new Date(ts);
+    return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
+  }
+
+  /* Wurde diese Aktion heute schon gesammelt? Zählt über Durchläufe
+     hinweg nur den aktuellen – reicht, weil ein Durchlauf-Wechsel
+     ohnehin ein bewusster Neuanfang ist. */
+  function addedToday(activityId) {
+    var today = dayKey(Date.now());
+    for (var i = data.stickers.length - 1; i >= 0; i--) {
+      var s = data.stickers[i];
+      if (dayKey(s.t) !== today) break;      // älter als heute -> fertig
+      if (s.a === activityId) return true;
+    }
+    return false;
+  }
+
   function isUnlockMoment(n) { return n > 0 && n % UNLOCK_EVERY === 0; }
   function isWorldComplete() { return count() >= WORLD_SIZE; }
 
@@ -160,6 +188,7 @@ window.Store = (function () {
     load: load, save: save,
     get data() { return data; },
     count: count, total: total, addSticker: addSticker,
+    removeLastSticker: removeLastSticker, addedToday: addedToday, dayKey: dayKey,
     isUnlockMoment: isUnlockMoment, isWorldComplete: isWorldComplete,
     startNewRun: startNewRun, markCompleteAsked: markCompleteAsked,
     activities: activities, setActivities: setActivities,
