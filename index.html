@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MY LITTLE JOY</title>
+<meta name="theme-color" content="#dbecf5">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="description" content="Nothing is required. Everything counts.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<div class="app">
+  <main class="views" id="views">
+
+    <!-- ───────────────────────── HOME ───────────────────────── -->
+    <section class="view" id="view-home">
+      <header class="hero">
+        <span class="hero__mark">🐚</span>
+        <h1 class="hero__title">MY LITTLE JOY</h1>
+        <p class="hero__sub">Nothing is required.<br>Everything counts.</p>
+        <div class="level-pill">🌿 LEVEL 1 · GROUNDING</div>
+      </header>
+
+      <div class="card card--collect" id="collectCard" hidden>
+        <div class="flower-row" id="flowerRow"></div>
+      </div>
+
+      <div class="card card--world">
+        <div class="bw" id="bwHome"></div>
+        <p class="world-caption" id="worldCaption">Your beach is growing… <b>♡</b></p>
+      </div>
+
+      <button class="btn-add" id="btnAdd">
+        <span class="btn-add__plus">＋</span>
+        <span>I DID SOMETHING FOR ME</span>
+      </button>
+
+      <p class="whisper">Du darfst die App jederzeit einfach wieder zumachen. ♡</p>
+    </section>
+
+    <!-- ───────────────────────── WORLD ──────────────────────── -->
+    <section class="view" id="view-world" hidden>
+      <header class="hero hero--small">
+        <p class="wave">〜〜〜</p>
+        <h1 class="hero__title">YOUR BEACH WORLD</h1>
+        <p class="hero__sub">So wächst deine Beach World ♡</p>
+        <div class="level-pill" id="runPill" hidden></div>
+      </header>
+
+      <div class="card card--world">
+        <div class="bw" id="bwWorld"></div>
+        <p class="world-caption" id="collectedWorld">0 little things collected</p>
+      </div>
+
+      <p class="script" style="margin-top:22px">
+        Jeder Sticker bringt ein kleines Stück<br>mehr von dem, was dir guttut.
+      </p>
+
+      <div class="discovered" id="discovered"></div>
+      <p class="deco wave">〜 ♡ 〜</p>
+    </section>
+
+    <!-- ─────────────────────── JOY WALLET ───────────────────── -->
+    <section class="view" id="view-wallet" hidden>
+      <header class="hero hero--small">
+        <span class="hero__mark">🐚</span>
+        <h1 class="hero__title">JOY WALLET</h1>
+        <p class="hero__sub">Deine gesammelten Joy Cards.</p>
+      </header>
+
+      <p class="empty" id="walletEmpty" hidden>
+        Hier sammeln sich deine Joy Cards.<br>Ganz ohne Eile. ♡
+      </p>
+
+      <p class="collected" id="walletCount" style="justify-content:center; margin-bottom:14px">
+        <span class="collected__dot">🎟️</span><span class="collected__text">0 Joy Cards usable</span>
+      </p>
+
+      <div class="joy-grid" id="joyGrid"></div>
+
+      <section class="used-wrap" id="usedWrap" hidden>
+        <h2 class="section-title section-title--icon">
+          <svg class="icon-ticket" viewBox="0 0 30 18" aria-hidden="true">
+            <path d="M1 4.5A1.5 1.5 0 0 1 2.5 3h9l-1.5 2.25L11.5 7.5 10 9.75l1.5 2.25L10 14.25H2.5A1.5 1.5 0 0 1 1 12.75Z"/>
+            <path d="M29 4.5A1.5 1.5 0 0 0 27.5 3h-9l1.5 2.25L18.5 7.5 20 9.75l-1.5 2.25L20 14.25h7.5A1.5 1.5 0 0 0 29 12.75Z"/>
+          </svg>
+          Already used
+        </h2>
+        <div class="joy-grid joy-grid--used" id="usedGrid"></div>
+      </section>
+    </section>
+
+    <!-- ───────────────────────── MORE ───────────────────────── -->
+    <section class="view" id="view-more" hidden>
+      <header class="hero hero--small">
+        <h1 class="hero__title">MORE</h1>
+      </header>
+
+      <div class="card pad">
+        <h2 class="section-title">Dein Level</h2>
+        <p class="level">LEVEL 1 – GROUNDING 🌱</p>
+        <p class="muted">Ganz niedrigschwellig: Essen, Ruhe, gemütliche Abende.
+          Weitere Level kommen irgendwann dazu – freiwillig, nie als Aufgabe.</p>
+      </div>
+
+      <div class="card pad">
+        <h2 class="section-title">Deine Sammlung</h2>
+        <p class="muted" id="moreStats">–</p>
+      </div>
+
+      <!-- ── eigene Aktionen ── -->
+      <div class="card pad">
+        <h2 class="section-title">Meine Aktionen</h2>
+        <p class="muted">Was zählt, entscheidest du.</p>
+        <div class="row">
+          <button class="btn-soft btn-soft--wide" id="btnHabitsOpen">
+            <span id="habitsCount">–</span>
+            <span class="btn-soft__chev">›</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- ── Welt ── -->
+      <div class="card pad">
+        <h2 class="section-title">Deine Welt</h2>
+        <p class="muted" id="worldInfo">–</p>
+        <div class="row">
+          <button class="btn-soft" id="btnRestartWorld">Neue Welt beginnen</button>
+        </div>
+        <p class="muted" style="margin-top:12px; font-size:13.5px">
+          Später kommen weitere Welten dazu – Wald 🌲, Schnee ❄️ und mehr.
+          Deine Joy Cards nimmst du überall mit.
+        </p>
+      </div>
+
+      <div class="card pad">
+        <h2 class="section-title">Warum es diese App gibt</h2>
+        <p class="muted">
+          Das hier ist kein Habit Tracker. Es gibt keine Streaks, keine Ziele,
+          keine Prozente und keine verpassten Tage. Die App zeigt dir nur die
+          schönen Dinge, die du sowieso schon für dich getan hast.
+        </p>
+        <p class="quote">Nichts muss. Alles zählt.</p>
+      </div>
+
+      <div class="card pad">
+        <h2 class="section-title">Daten</h2>
+        <p class="muted">Alles bleibt auf diesem Gerät. Hier kannst du deine Sammlung sichern oder übertragen.</p>
+        <div class="row">
+          <button class="btn-soft" id="btnExport">Sammlung anzeigen</button>
+          <button class="btn-soft" id="btnImportToggle">Sammlung einfügen</button>
+        </div>
+        <textarea class="data-box" id="dataBox" hidden spellcheck="false"></textarea>
+        <div class="row" id="importRow" hidden>
+          <button class="btn-soft" id="btnImportApply">Übernehmen</button>
+        </div>
+        <div class="row" id="downloadRow" hidden>
+          <a class="btn-soft" id="btnDownload" download="my-little-joy.json">Als Datei speichern</a>
+        </div>
+      </div>
+
+      <div class="card pad">
+        <h2 class="section-title">Neu anfangen</h2>
+        <p class="muted">Löscht alle Sticker und Joy Cards. Nur falls du das wirklich möchtest.</p>
+        <div class="row"><button class="btn-soft btn-soft--danger" id="btnReset">Alles zurücksetzen</button></div>
+      </div>
+
+      <p class="whisper">MY LITTLE JOY · v1</p>
+    </section>
+
+  </main>
+
+  <nav class="nav" id="nav">
+    <button class="nav__btn is-active" data-view="home"><span>🏠</span><em>Home</em></button>
+    <button class="nav__btn" data-view="world"><span>🌊</span><em>World</em></button>
+    <button class="nav__btn" data-view="wallet"><span>🎟️</span><em>Joy Wallet</em></button>
+    <button class="nav__btn" data-view="more"><span>☰</span><em>More</em></button>
+  </nav>
+</div>
+
+<!-- ───────────────── activity sheet ───────────────── -->
+<div class="sheet" id="sheet" hidden>
+  <div class="sheet__scrim" data-close></div>
+  <div class="sheet__panel">
+    <div class="sheet__grip"></div>
+    <h2 class="sheet__title">Was hast du für dich getan?</h2>
+    <p class="sheet__sub">Such dir aus, was passt. Auch mehrmals. ♡</p>
+    <div class="acts" id="acts"></div>
+    <button class="btn-ghost" data-close>Doch nicht ♡</button>
+  </div>
+</div>
+
+<!-- ───────────────── Aktionen bearbeiten ───────────────── -->
+<div class="sheet sheet--foot" id="habitSheet" hidden>
+  <div class="sheet__scrim" data-close></div>
+  <div class="sheet__panel">
+    <div class="sheet__grip"></div>
+    <h2 class="sheet__title">Meine Aktionen</h2>
+    <p class="sheet__sub">Ändern, löschen, ergänzen – ganz wie du magst.<br>
+      Alles wird sofort gespeichert. ♡</p>
+    <div class="habits" id="habits"></div>
+    <div class="row row--center">
+      <button class="btn-soft btn-soft--quiet" id="btnHabitReset">Standardliste wiederherstellen</button>
+    </div>
+    <div class="sheet__foot">
+      <button class="btn-soft btn-soft--accent" id="btnHabitAdd">＋ Aktion hinzufügen</button>
+      <button class="btn-soft" data-close>Fertig ♡</button>
+    </div>
+  </div>
+</div>
+
+<!-- ───────────────── joy unlock ───────────────── -->
+<div class="overlay" id="joyOverlay" hidden>
+  <div class="overlay__inner">
+    <p class="unlock__kicker">✨ A LITTLE JOY UNLOCKED ✨</p>
+    <p class="unlock__sub" id="unlockSub"></p>
+    <div class="joycard joycard--big" id="unlockCard"></div>
+    <button class="btn-add btn-add--slim" id="btnKeepJoy">In das Joy Wallet legen</button>
+  </div>
+</div>
+
+<!-- ───────────────── card modal ───────────────── -->
+<div class="overlay" id="cardModal" hidden>
+  <div class="overlay__scrim" data-close></div>
+  <div class="overlay__inner">
+    <div class="joycard joycard--big" id="modalCard"></div>
+    <button class="btn-add btn-add--slim btn-add--blue" id="btnUseJoy">Use this Joy</button>
+    <button class="btn-ghost" data-close>Für später aufheben</button>
+  </div>
+</div>
+
+<!-- ───────────────── world complete ───────────────── -->
+<div class="overlay" id="worldDone" hidden>
+  <div class="overlay__inner">
+    <p class="unlock__kicker" id="worldDoneKicker">🌅 DEINE WELT IST KOMPLETT 🌅</p>
+    <div class="joycard joycard--big">
+      <span class="joycard__emoji" id="worldDoneEmoji">🏖️</span>
+      <h3 class="joycard__title" id="worldDoneTitle">100 LITTLE THINGS</h3>
+      <p class="joycard__body" id="worldDoneBody"></p>
+    </div>
+    <button class="btn-add btn-add--slim" id="btnNewWorld">Neue Welt beginnen 🌱</button>
+    <button class="btn-ghost" id="btnKeepWorld">So lassen ♡</button>
+  </div>
+</div>
+
+<!-- ───────────────── destruktiver Dialog ───────────────── -->
+<div class="overlay" id="confirmReset" hidden>
+  <div class="overlay__scrim" data-close></div>
+  <div class="overlay__inner">
+    <div class="dialog">
+      <span class="dialog__icon">⚠️</span>
+      <h3 class="dialog__title">Alles zurücksetzen?</h3>
+      <p class="dialog__body">
+        Das löscht <b>alle Sticker</b>, <b>alle Joy Cards</b> und
+        <b>deine eigenen Aktionen</b>. Endgültig – es gibt kein Zurück.
+      </p>
+      <p class="dialog__hint">Tipp: Unter „Daten“ kannst du vorher eine Sicherung speichern.</p>
+      <button class="btn-danger" id="btnResetConfirm">Ja, alles löschen</button>
+      <button class="btn-ghost btn-ghost--dark" data-close>Abbrechen</button>
+    </div>
+  </div>
+</div>
+
+<div class="fx-layer" id="fxLayer" aria-hidden="true"></div>
+<div class="toast" id="toast" hidden></div>
+
+<script src="js/activities.js"></script>
+<script src="js/joycards.js"></script>
+<script src="js/state.js"></script>
+<script src="js/beachworld.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
