@@ -2,9 +2,9 @@
 <html lang="de">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>MY LITTLE JOY</title>
-<meta name="theme-color" content="#dbecf5">
+<meta name="theme-color" content="#dbecf5" id="themeColor">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="description" content="Nothing is required. Everything counts.">
@@ -40,8 +40,6 @@
         <span class="btn-add__plus">＋</span>
         <span>I DID SOMETHING FOR ME</span>
       </button>
-
-      <p class="whisper">Du darfst die App jederzeit einfach wieder zumachen. ♡</p>
     </section>
 
     <!-- ───────────────────────── WORLD ──────────────────────── -->
@@ -115,6 +113,14 @@
             <span class="setting__value" id="habitsCount">–</span>
             <span class="setting__chev">›</span>
           </button>
+          <div class="setting setting--stack">
+            <span class="setting__label">Nachtmodus <em class="setting__sub">22:00 – 5:30 Uhr</em></span>
+            <div class="seg" id="nightSeg">
+              <button type="button" data-night="auto">Automatisch</button>
+              <button type="button" data-night="on">Immer an</button>
+              <button type="button" data-night="off">Aus</button>
+            </div>
+          </div>
         </div>
         <p class="muted setting__hint">
           Die Aktionen bestimmen, <b>was zählt</b> – das Level, <b>was du dafür
@@ -173,6 +179,7 @@
         <div class="row"><button class="btn-soft btn-soft--danger" id="btnReset">Alles zurücksetzen</button></div>
       </div>
 
+      <p class="whisper">Du darfst die App jederzeit einfach wieder zumachen. ♡</p>
       <p class="whisper">MY LITTLE JOY · v1</p>
     </section>
 

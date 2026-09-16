@@ -57,7 +57,8 @@
     var t = $('toast');
     t.innerHTML = '<div class="toast__main">' + main + '</div>' + (sub ? '<div class="toast__sub">' + sub + '</div>' : '');
     t.hidden = false;
-    requestAnimationFrame(function () { t.classList.add('is-open'); });
+    void t.offsetWidth;
+    t.classList.add('is-open');
     clearTimeout(toast._t);
     toast._t = setTimeout(function () {
       t.classList.remove('is-open');
@@ -65,9 +66,15 @@
     }, ms || 2800);
   }
 
+  /* Bewusst kein requestAnimationFrame: das feuert nicht, wenn die Seite
+     gerade nicht zeichnet (App im Hintergrund, Wiederaufwachen). Dann
+     bliebe das Overlay unsichtbar unter dem Rand liegen, waere aber
+     bereits eingeblendet - und wuerde Klicks schlucken. Ein erzwungener
+     Reflow startet die Transition zuverlaessig. */
   function openLayer(el) {
     el.hidden = false;
-    requestAnimationFrame(function () { el.classList.add('is-open'); });
+    void el.offsetWidth;
+    el.classList.add('is-open');
   }
   function closeLayer(el) {
     el.classList.remove('is-open');
@@ -215,6 +222,7 @@
     renderWallet();
     renderMore();
     renderActs();
+    fitHomeWorld();   // die Blütenreihe kann von einer auf zwei Zeilen wachsen
   }
 
   /* ── navigation ────────────────────────────────────────────── */
@@ -224,8 +232,62 @@
     Array.prototype.forEach.call(document.querySelectorAll('.nav__btn'), function (b) {
       b.classList.toggle('is-active', b.getAttribute('data-view') === view);
     });
+    /* Home passt auf einen Bildschirm und scrollt nicht - alle anderen
+       Seiten scrollen wie bisher. */
+    document.body.classList.toggle('is-home', view === 'home');
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    fitHomeWorld();
   }
+
+  /* ── Home ohne Scrollen: Beach World nimmt den Rest ────────── */
+
+  /* Die Welt muss quadratisch bleiben (der Papier-Schleier rechnet in
+     Prozent der Boxhoehe). Deshalb wird die Kantenlaenge hier aus dem
+     tatsaechlich freien Platz berechnet statt in CSS geraten. */
+  function fitHomeWorld() {
+    var bw = $('bwHome');
+    if (!document.body.classList.contains('is-home')) {
+      bw.style.width = ''; bw.style.height = '';
+      return;
+    }
+    var card = document.querySelector('#view-home .card--world');
+    var free = card.clientHeight - $('worldCaption').offsetHeight - 9;
+    var wide = card.clientWidth - 18;
+    var size = Math.max(150, Math.min(wide, free));
+    bw.style.width = size + 'px';
+    bw.style.height = size + 'px';
+  }
+
+  var fitTimer = null;
+  function fitSoon() { clearTimeout(fitTimer); fitTimer = setTimeout(fitHomeWorld, 60); }
+  window.addEventListener('resize', fitSoon);
+  window.addEventListener('orientationchange', fitSoon);
+
+  /* ── Nachtmodus ────────────────────────────────────────────── */
+
+  function applyNight() {
+    var on = Store.isNight();
+    document.body.classList.toggle('night', on);
+    var meta = $('themeColor');
+    if (meta) meta.setAttribute('content', on ? '#131d26' : '#dbecf5');
+
+    Array.prototype.forEach.call($('nightSeg').querySelectorAll('button'), function (b) {
+      b.classList.toggle('is-on', b.getAttribute('data-night') === Store.nightMode());
+    });
+  }
+
+  $('nightSeg').addEventListener('click', function (e) {
+    var b = e.target.closest('button[data-night]');
+    if (!b) return;
+    Store.setNightMode(b.getAttribute('data-night'));
+    applyNight();
+  });
+
+  /* Automatik nachziehen: beim Zurueckkommen zur App und einmal pro Minute. */
+  document.addEventListener('visibilitychange', function () {
+    if (!document.hidden) { applyNight(); fitSoon(); }
+  });
+  setInterval(applyNight, 60000);
 
   $('nav').addEventListener('click', function (e) {
     var b = e.target.closest('.nav__btn');
@@ -331,7 +393,8 @@
   function showUndo() {
     var bar = $('undoBar');
     bar.hidden = false;
-    requestAnimationFrame(function () { bar.classList.add('is-open'); });
+    void bar.offsetWidth;
+    bar.classList.add('is-open');
     clearTimeout(undoTimer);
     undoTimer = setTimeout(hideUndo, 6500);
   }
@@ -620,6 +683,10 @@
 
   renderAll();
   renderHabits();
+  applyNight();
+  document.body.classList.add('is-home');
+  fitHomeWorld();
+  window.addEventListener('load', fitHomeWorld);
 
   if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) {
     window.addEventListener('load', function () {

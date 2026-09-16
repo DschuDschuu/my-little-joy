@@ -721,3 +721,161 @@ button, a.btn-soft{ cursor:pointer; }
   55%  { filter:drop-shadow(0 0 6px rgba(255,240,198,.6))  drop-shadow(0 0 16px rgba(255,222,165,.4)); }
   100% { filter:drop-shadow(0 0 0 rgba(255,238,200,0)); }
 }
+
+/* ============================================================
+   v3: kein Zoom · Home ohne Scrollen · Nachtmodus
+   ============================================================ */
+
+/* ── Zoom / Doppeltipp aus ──────────────────────────────── */
+
+html{
+  touch-action:manipulation;          /* kein Doppeltipp-Zoom */
+  -webkit-text-size-adjust:100%;
+  text-size-adjust:100%;
+}
+
+/* ── Home passt auf einen Bildschirm ────────────────────── */
+
+body.is-home{ overflow:hidden; height:100%; }
+
+body.is-home .views{
+  height:100dvh;
+  overflow:hidden;
+  display:flex; flex-direction:column;
+  padding-bottom:calc(84px + env(safe-area-inset-bottom));
+}
+
+body.is-home #view-home{
+  display:flex; flex-direction:column;
+  flex:1 1 auto; min-height:0;
+}
+
+body.is-home #view-home .hero{ flex:0 0 auto; padding:10px 6px 14px; }
+body.is-home #view-home .card--collect{ flex:0 0 auto; }
+
+/* Die Weltkarte nimmt den Rest. Die Kantenlänge der quadratischen
+   Beach World setzt app.js (fitHomeWorld), weil CSS den freien Platz
+   hier nicht zuverlässig in eine Quadratseite umrechnen kann. */
+body.is-home #view-home .card--world{
+  flex:1 1 auto; min-height:0;
+  display:flex; flex-direction:column; align-items:center;
+}
+body.is-home #view-home .bw{ flex:0 0 auto; }
+body.is-home #view-home .world-caption{ flex:0 0 auto; padding:10px 10px 12px; }
+body.is-home #view-home .btn-add{ flex:0 0 auto; }
+
+/* auf kurzen Displays zuerst die leisen Zeilen opfern */
+@media (max-height:720px){
+  body.is-home #view-home .hero__mark{ display:none; }
+}
+@media (max-height:620px){
+  body.is-home #view-home .hero__sub{ display:none; }
+}
+
+/* ── Umschalter (Nachtmodus) ────────────────────────────── */
+
+.setting--stack{ display:block; padding:14px 2px 13px; }
+.setting__sub{
+  display:block; font-style:normal; font-size:11.5px;
+  color:var(--ink-3); letter-spacing:.04em; margin-top:2px;
+}
+
+.seg{
+  display:flex; gap:6px; margin-top:11px;
+}
+.seg button{
+  flex:1 1 0; padding:9px 6px;
+  border:1px solid rgba(61,106,130,.18); border-radius:999px;
+  background:rgba(255,255,255,.5); color:var(--ink-3);
+  font-size:12.5px; letter-spacing:.03em;
+  transition:background .2s ease, color .2s ease, border-color .2s ease;
+}
+.seg button.is-on{
+  background:linear-gradient(180deg,#e2eef5,#cfe3ee);
+  border-color:transparent; color:var(--ink); font-weight:600;
+}
+
+/* ── Nachtmodus ─────────────────────────────────────────── */
+
+body.night{
+  --bg-1:#131d26; --bg-2:#1a2833; --bg-3:#0d151c;
+  --card:#1d2a35; --card-2:#22303c;
+  --paper:#26333f;
+
+  --ink:#dfe9f0; --ink-2:#a9c2d1; --ink-3:#7f99ab;
+  --script:#9cc2d8;
+
+  --pink:#e79aa8;
+  --danger:#d97c77;
+
+  --shadow-s:0 2px 7px rgba(0,0,0,.30);
+  --shadow-m:0 10px 26px rgba(0,0,0,.38), 0 2px 6px rgba(0,0,0,.24);
+  --shadow-l:0 26px 60px rgba(0,0,0,.52), 0 4px 14px rgba(0,0,0,.32);
+}
+
+body.night::after{ opacity:.03; mix-blend-mode:overlay; }
+
+/* Die Beach World mitdimmen – sonst ist sie nachts die einzige helle
+   Fläche und blendet genauso wie vorher. */
+body.night .bw > svg{ filter:brightness(.58) saturate(.82) contrast(.96); }
+body.night .bw{ box-shadow:inset 0 0 0 1px rgba(255,255,255,.05); }
+body.night .bw__grain{ opacity:.04; }
+
+body.night .btn-add{
+  background:linear-gradient(180deg,#6e4650,#573640);
+  color:#f7dfe4;
+  box-shadow:0 10px 22px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.12);
+}
+body.night .btn-add--blue{
+  background:linear-gradient(180deg,#3d6c86,#2d556b); color:#e8f3f9;
+}
+body.night .btn-soft{ background:rgba(255,255,255,.06); border-color:rgba(255,255,255,.12); }
+body.night .btn-soft--accent{ background:linear-gradient(180deg,#6e4650,#573640); color:#f7dfe4; }
+body.night .seg button{ background:rgba(255,255,255,.05); border-color:rgba(255,255,255,.12); }
+body.night .seg button.is-on{ background:linear-gradient(180deg,#39566a,#2c4557); color:#eaf4fa; }
+
+body.night .nav{ background:rgba(29,42,53,.94); box-shadow:0 -8px 26px rgba(0,0,0,.4); }
+body.night .act,
+body.night .habit{ background:linear-gradient(180deg,#22303c,#1c2933); border-color:rgba(255,255,255,.07); }
+body.night .joycard,
+body.night .joy-mini{ background:linear-gradient(165deg,#243341,#1d2a35); }
+body.night .joycard::before{ border-color:rgba(231,154,168,.3); }
+body.night .icon-ticket{ fill:#243341; }
+body.night .dialog{ background:var(--card); }
+body.night .data-box{ background:#16222c; border-color:rgba(255,255,255,.12); color:var(--ink-2); }
+body.night .toast,
+body.night .undo-bar__btn{ background:var(--card); }
+body.night .overlay::before{ background:rgba(8,14,19,.6); }
+body.night .sheet__scrim{ background:rgba(8,14,19,.55); }
+
+/* Der helle Lichtverlauf im Seitenhintergrund ist fest verdrahtet und
+   wuerde nachts oben als greller Schleier stehen bleiben. */
+body.night{
+  background:
+    radial-gradient(900px 600px at 85% 0%, rgba(116,166,200,.15), rgba(116,166,200,0) 60%),
+    linear-gradient(180deg, var(--bg-2) 0%, var(--bg-1) 45%, var(--bg-3) 100%);
+  background-attachment:fixed;
+}
+
+/* Die weiche Kante des Papier-Schleiers hatte die Cremefarbe fest im
+   Verlauf stehen - nachts wurde daraus ein greller Streifen quer durch
+   die Welt. Gleiche Kurve, nur in der Nachtfarbe. */
+body.night .bw__veil{
+  background:linear-gradient(to bottom,
+      rgba(38,51,63,0)   0%,
+      rgba(38,51,63,.45) 1%,
+      rgba(38,51,63,.9)  2%,
+      var(--paper)       3.4%,
+      var(--paper)       100%);
+}
+body.night .bw__glow{
+  background:radial-gradient(58% 100% at 50% 100%, rgba(255,226,175,.32), rgba(255,226,175,0) 72%);
+}
+
+/* Nachgereicht nach einer Suche nach fest verdrahteten Hellwerten:
+   Diese beiden waren nicht ueber Tokens gebaut und haetten nachts
+   aufgeblitzt. */
+body.night .act:active{ background:#2a3b49; }
+body.night .sheet__foot::before{
+  background:linear-gradient(180deg, rgba(29,42,53,0), var(--card));
+}

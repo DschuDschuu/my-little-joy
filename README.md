@@ -181,6 +181,37 @@ aufweichen:
   kein Bedauern beim Runtergehen, keine Statistik darüber. Ein Level, das
   man erreichen kann, muss man genauso selbstverständlich verlassen können.
 
+---
+
+## Nachtmodus, Zoom, Home-Höhe
+
+**Nachtmodus** schaltet automatisch von **22:00 bis 5:30 Uhr** Ortszeit.
+Unter *More → Anpassen* lässt sich das auf *Immer an* oder *Aus* stellen
+(`data.night` = `auto` | `on` | `off`). Die Automatik wird beim Start, beim
+Zurückkommen zur App (`visibilitychange`) und einmal pro Minute nachgezogen.
+
+Die Beach World wird dabei **mitgedimmt** (`filter: brightness(.58)`) – sonst
+wäre die Illustration nachts die einzige helle Fläche und würde genauso
+blenden wie vorher. Zwei Stellen mussten dafür extra behandelt werden, weil
+sie Farben fest verdrahtet hatten statt über Tokens zu gehen: der
+Lichtverlauf im Seitenhintergrund und die weiche Kante des Papier-Schleiers
+(`.bw__veil`). Beim Anlegen neuer Verläufe daran denken.
+
+**Zoom** ist per `user-scalable=no` plus `touch-action: manipulation`
+abgeschaltet (Doppeltipp-Zoom). Bewusste Entscheidung für eine
+Ein-Personen-App – für breitere Nutzung wäre das ein Accessibility-Problem.
+iOS-Safari ignoriert die Einstellung ohnehin.
+
+**Home scrollt nicht.** `body.is-home` macht aus der Seite eine feste
+Bildschirmhöhe (`100dvh`), in der die Beach World den übrigen Platz einnimmt.
+Die Kantenlänge des Quadrats berechnet `fitHomeWorld()` in `app.js` – nicht
+CSS, weil die Welt zwingend quadratisch bleiben muss (der Papier-Schleier
+rechnet in Prozent der Boxhöhe) und CSS den freien Flex-Platz nicht
+zuverlässig in eine Quadratseite umrechnen kann. Neu berechnet wird bei
+Resize, Orientierungswechsel, Seitenwechsel und nach jedem Render.
+Unter 720 px Höhe entfallen die leisen Zeilen, unter 620 px auch der
+Untertitel. Alle anderen Seiten scrollen weiterhin normal.
+
 Zwei bewusste Ausnahmen von der „ruhigen" Grundregel, beide gewünscht:
 
 * **Rot** gibt es genau einmal – im Bestätigungsdialog für „Alles
@@ -318,6 +349,12 @@ und funktioniert offline.
   *Application → Service Workers → Unregister* und einmal mit Strg+Shift+R
   neu laden. Der Dev-Server schickt `Cache-Control: no-cache`
   (bewusst nicht `no-store` – damit lehnt Chrome Service-Worker-Skripte ab).
+* **Overlays öffnen ohne `requestAnimationFrame`.** `openLayer()` erzwingt
+  einen Reflow statt auf rAF zu warten. Grund: rAF feuert nicht, wenn die
+  Seite gerade nicht zeichnet (App im Hintergrund, Wiederaufwachen). Dann
+  stünde das Overlay auf `hidden=false`, bekäme aber nie `is-open` – es läge
+  unsichtbar da und würde Klicks schlucken. Genau dieselbe Klasse von Fehler
+  wie beim `[hidden]`-Problem unten.
 * **`[hidden]` und `display`:** Overlays und Zeilen setzen `display:flex`.
   Autor-Regeln schlagen das `display:none` des Browsers für `[hidden]` –
   deshalb steht ganz oben in `styles.css` ein

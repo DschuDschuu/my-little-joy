@@ -19,6 +19,7 @@ window.Store = (function () {
       cards: [],
       activities: null,     // null = Standardliste aus activities.js
       completeAsked: false, // wurde für diesen Durchlauf schon gefragt?
+      night: 'auto',        // 'auto' (22:00–5:30) | 'on' | 'off'
       created: Date.now()
     };
   }
@@ -37,7 +38,27 @@ window.Store = (function () {
     d.worldId = p.worldId || 'beach';
     d.activities = p.activities || null;
     d.completeAsked = !!p.completeAsked;
+    d.night = (p.night === 'on' || p.night === 'off') ? p.night : 'auto';
     return d;
+  }
+
+  /* ── Nachtmodus ───────────────────────────────────────────────── */
+
+  function nightMode() { return data.night || 'auto'; }
+
+  function setNightMode(m) {
+    data.night = (m === 'on' || m === 'off') ? m : 'auto';
+    save();
+  }
+
+  /* Automatik: 22:00 bis 5:30 Uhr Ortszeit. */
+  function isNight(now) {
+    var m = nightMode();
+    if (m === 'on') return true;
+    if (m === 'off') return false;
+    var d = now ? new Date(now) : new Date();
+    var mins = d.getHours() * 60 + d.getMinutes();
+    return mins >= 22 * 60 || mins < 5 * 60 + 30;
   }
 
   function load() {
@@ -191,6 +212,7 @@ window.Store = (function () {
     removeLastSticker: removeLastSticker, addedToday: addedToday, dayKey: dayKey,
     isUnlockMoment: isUnlockMoment, isWorldComplete: isWorldComplete,
     startNewRun: startNewRun, markCompleteAsked: markCompleteAsked,
+    nightMode: nightMode, setNightMode: setNightMode, isNight: isNight,
     activities: activities, setActivities: setActivities,
     resetActivities: resetActivities, activityLabel: activityLabel,
     drawCard: drawCard, cardDef: cardDef, useCard: useCard, cards: cards,
