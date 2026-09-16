@@ -265,15 +265,29 @@
 
   /* ── Nachtmodus ────────────────────────────────────────────── */
 
+  var NIGHT_NOTE = {
+    auto: 'Feste Uhrzeiten. Die Sommerzeit macht die App automatisch mit, dem Sonnenstand folgt sie aber nicht – im Winter wird es früher dunkel.',
+    system: 'Folgt dem Dunkelmodus deines Handys. Wenn du dort unter Anzeige → Dunkelmodus „Sonnenuntergang bis Sonnenaufgang" einstellst, passt sich die App das ganze Jahr von selbst an.',
+    on: 'Immer dunkel, unabhängig von der Uhrzeit.',
+    off: 'Immer hell.'
+  };
+
   function applyNight() {
+    var mode = Store.nightMode();
     var on = Store.isNight();
+
     document.body.classList.toggle('night', on);
     var meta = $('themeColor');
     if (meta) meta.setAttribute('content', on ? '#131d26' : '#dbecf5');
 
     Array.prototype.forEach.call($('nightSeg').querySelectorAll('button'), function (b) {
-      b.classList.toggle('is-on', b.getAttribute('data-night') === Store.nightMode());
+      b.classList.toggle('is-on', b.getAttribute('data-night') === mode);
     });
+
+    $('nightTimes').hidden = mode !== 'auto';
+    $('nightFrom').value = Store.nightFrom();
+    $('nightTo').value = Store.nightTo();
+    $('nightNote').textContent = NIGHT_NOTE[mode] || '';
   }
 
   $('nightSeg').addEventListener('click', function (e) {
@@ -282,6 +296,20 @@
     Store.setNightMode(b.getAttribute('data-night'));
     applyNight();
   });
+
+  $('nightTimes').addEventListener('change', function () {
+    Store.setNightTimes($('nightFrom').value, $('nightTo').value);
+    applyNight();
+  });
+
+  /* Wenn das Handy seinen Dunkelmodus umschaltet (z. B. bei
+     Sonnenuntergang), zieht die App sofort mit. */
+  try {
+    var mq = window.matchMedia('(prefers-color-scheme: dark)');
+    var onMq = function () { if (Store.nightMode() === 'system') applyNight(); };
+    if (mq.addEventListener) mq.addEventListener('change', onMq);
+    else if (mq.addListener) mq.addListener(onMq);
+  } catch (e) {}
 
   /* Automatik nachziehen: beim Zurueckkommen zur App und einmal pro Minute. */
   document.addEventListener('visibilitychange', function () {

@@ -185,10 +185,22 @@ aufweichen:
 
 ## Nachtmodus, Zoom, Home-Höhe
 
-**Nachtmodus** schaltet automatisch von **22:00 bis 5:30 Uhr** Ortszeit.
-Unter *More → Anpassen* lässt sich das auf *Immer an* oder *Aus* stellen
-(`data.night` = `auto` | `on` | `off`). Die Automatik wird beim Start, beim
-Zurückkommen zur App (`visibilitychange`) und einmal pro Minute nachgezogen.
+**Nachtmodus** hat vier Modi, einstellbar unter *More → Anpassen*
+(`data.night`):
+
+| Modus | Verhalten |
+|---|---|
+| `auto` | Feste Uhrzeiten, standardmäßig 22:00–5:30, in der App änderbar (`data.nightFrom` / `data.nightTo`). Spannen über Mitternacht werden unterstützt. |
+| `system` | Folgt `prefers-color-scheme` des Geräts. Unter Android lässt sich der Dunkelmodus auf *Sonnenuntergang bis Sonnenaufgang* stellen – damit folgt die App dem echten Sonnenstand übers ganze Jahr. |
+| `on` / `off` | Fest dunkel bzw. fest hell. |
+
+`auto` liest die lokale Wanduhr, die **Sommerzeitumstellung wird also
+automatisch mitgemacht**, dem Sonnenstand folgt sie aber nicht. Genau dafür
+gibt es `system`.
+
+Nachgezogen wird beim Start, beim Zurückkommen zur App
+(`visibilitychange`), einmal pro Minute und – im Modus `system` – sofort
+über einen `matchMedia`-Listener.
 
 Die Beach World wird dabei **mitgedimmt** (`filter: brightness(.58)`) – sonst
 wäre die Illustration nachts die einzige helle Fläche und würde genauso

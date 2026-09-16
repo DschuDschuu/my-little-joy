@@ -114,12 +114,18 @@
             <span class="setting__chev">›</span>
           </button>
           <div class="setting setting--stack">
-            <span class="setting__label">Nachtmodus <em class="setting__sub">22:00 – 5:30 Uhr</em></span>
-            <div class="seg" id="nightSeg">
-              <button type="button" data-night="auto">Automatisch</button>
+            <span class="setting__label">Nachtmodus</span>
+            <div class="seg seg--wrap" id="nightSeg">
+              <button type="button" data-night="auto">Nach Uhrzeit</button>
+              <button type="button" data-night="system">Wie das System</button>
               <button type="button" data-night="on">Immer an</button>
               <button type="button" data-night="off">Aus</button>
             </div>
+            <div class="night-times" id="nightTimes">
+              <label>von <input type="time" id="nightFrom" value="22:00"></label>
+              <label>bis <input type="time" id="nightTo" value="05:30"></label>
+            </div>
+            <p class="setting__sub" id="nightNote"></p>
           </div>
         </div>
         <p class="muted setting__hint">

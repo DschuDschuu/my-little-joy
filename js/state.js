@@ -19,7 +19,9 @@ window.Store = (function () {
       cards: [],
       activities: null,     // null = Standardliste aus activities.js
       completeAsked: false, // wurde für diesen Durchlauf schon gefragt?
-      night: 'auto',        // 'auto' (22:00–5:30) | 'on' | 'off'
+      night: 'auto',        // 'auto' (Uhrzeit) | 'system' | 'on' | 'off'
+      nightFrom: '22:00',   // nur bei 'auto'
+      nightTo: '05:30',
       created: Date.now()
     };
   }
@@ -38,27 +40,61 @@ window.Store = (function () {
     d.worldId = p.worldId || 'beach';
     d.activities = p.activities || null;
     d.completeAsked = !!p.completeAsked;
-    d.night = (p.night === 'on' || p.night === 'off') ? p.night : 'auto';
+    d.night = NIGHT_MODES.indexOf(p.night) >= 0 ? p.night : 'auto';
+    d.nightFrom = validTime(p.nightFrom) || '22:00';
+    d.nightTo = validTime(p.nightTo) || '05:30';
     return d;
   }
 
   /* ── Nachtmodus ───────────────────────────────────────────────── */
 
+  var NIGHT_MODES = ['auto', 'system', 'on', 'off'];
+
+  function validTime(s) {
+    return (typeof s === 'string' && /^([01]\d|2[0-3]):[0-5]\d$/.test(s)) ? s : null;
+  }
+
+  function toMinutes(s) {
+    var p = String(s).split(':');
+    return (+p[0]) * 60 + (+p[1]);
+  }
+
   function nightMode() { return data.night || 'auto'; }
+  function nightFrom() { return data.nightFrom || '22:00'; }
+  function nightTo() { return data.nightTo || '05:30'; }
 
   function setNightMode(m) {
-    data.night = (m === 'on' || m === 'off') ? m : 'auto';
+    data.night = NIGHT_MODES.indexOf(m) >= 0 ? m : 'auto';
     save();
   }
 
-  /* Automatik: 22:00 bis 5:30 Uhr Ortszeit. */
+  function setNightTimes(from, to) {
+    if (validTime(from)) data.nightFrom = from;
+    if (validTime(to)) data.nightTo = to;
+    save();
+  }
+
+  /* Folgt der Dunkelmodus-Einstellung des Geraets. Unter Android laesst
+     sich die auf "Sonnenuntergang bis Sonnenaufgang" stellen - damit passt
+     sich die App ueber das Jahr von selbst an. */
+  function systemIsDark() {
+    try {
+      return !!(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    } catch (e) { return false; }
+  }
+
+  /* Uhrzeit-Automatik. Die Spanne darf ueber Mitternacht laufen. */
   function isNight(now) {
     var m = nightMode();
     if (m === 'on') return true;
     if (m === 'off') return false;
+    if (m === 'system') return systemIsDark();
+
     var d = now ? new Date(now) : new Date();
     var mins = d.getHours() * 60 + d.getMinutes();
-    return mins >= 22 * 60 || mins < 5 * 60 + 30;
+    var a = toMinutes(nightFrom()), b = toMinutes(nightTo());
+    if (a === b) return false;
+    return a > b ? (mins >= a || mins < b) : (mins >= a && mins < b);
   }
 
   function load() {
@@ -213,6 +249,7 @@ window.Store = (function () {
     isUnlockMoment: isUnlockMoment, isWorldComplete: isWorldComplete,
     startNewRun: startNewRun, markCompleteAsked: markCompleteAsked,
     nightMode: nightMode, setNightMode: setNightMode, isNight: isNight,
+    nightFrom: nightFrom, nightTo: nightTo, setNightTimes: setNightTimes,
     activities: activities, setActivities: setActivities,
     resetActivities: resetActivities, activityLabel: activityLabel,
     drawCard: drawCard, cardDef: cardDef, useCard: useCard, cards: cards,

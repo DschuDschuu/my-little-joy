@@ -879,3 +879,32 @@ body.night .act:active{ background:#2a3b49; }
 body.night .sheet__foot::before{
   background:linear-gradient(180deg, rgba(29,42,53,0), var(--card));
 }
+
+/* ── Nachtmodus: vier Modi + einstellbare Uhrzeiten ─────── */
+
+.seg--wrap{ flex-wrap:wrap; }
+.seg--wrap button{ flex:1 1 44%; }
+
+.night-times{
+  display:flex; gap:10px; margin-top:11px;
+}
+.night-times label{
+  flex:1 1 0; display:flex; align-items:center; gap:8px;
+  font-size:13px; color:var(--ink-3);
+}
+.night-times input[type="time"]{
+  flex:1 1 auto; min-width:0;
+  padding:9px 10px; border-radius:12px;
+  border:1px solid rgba(61,106,130,.18);
+  background:rgba(255,255,255,.55); color:var(--ink);
+  font-family:inherit; font-size:14px;
+}
+.night-times input[type="time"]:focus{ outline:none; border-color:var(--pink); }
+
+#nightNote{ margin-top:11px; line-height:1.55; }
+
+body.night .night-times input[type="time"]{
+  background:rgba(255,255,255,.06);
+  border-color:rgba(255,255,255,.12);
+  color-scheme:dark;
+}

@@ -1,5 +1,5 @@
 /* Minimaler Offline-Cache. Beim Ändern der Dateien CACHE hochzählen. */
-var CACHE = 'mylittlejoy-v3';
+var CACHE = 'mylittlejoy-v4';
 var FILES = [
   './',
   './index.html',
