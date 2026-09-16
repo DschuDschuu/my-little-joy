@@ -267,7 +267,7 @@
 
   var NIGHT_NOTE = {
     auto: 'Feste Uhrzeiten. Die Sommerzeit macht die App automatisch mit, dem Sonnenstand folgt sie aber nicht – im Winter wird es früher dunkel.',
-    system: 'Folgt dem Dunkelmodus deines Handys. Wenn du dort unter Anzeige → Dunkelmodus „Sonnenuntergang bis Sonnenaufgang" einstellst, passt sich die App das ganze Jahr von selbst an.',
+    system: 'Folgt dem Dunkelmodus deines Handys. Den Zeitplan stellst du unter Anzeige → Dunkelmodus ein – mit festen Uhrzeiten ganz ohne Standortfreigabe, oder nach Sonnenuntergang, wofür dein Handy den Standort braucht.',
     on: 'Immer dunkel, unabhängig von der Uhrzeit.',
     off: 'Immer hell.'
   };

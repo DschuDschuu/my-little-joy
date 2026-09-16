@@ -191,7 +191,7 @@ aufweichen:
 | Modus | Verhalten |
 |---|---|
 | `auto` | Feste Uhrzeiten, standardmäßig 22:00–5:30, in der App änderbar (`data.nightFrom` / `data.nightTo`). Spannen über Mitternacht werden unterstützt. |
-| `system` | Folgt `prefers-color-scheme` des Geräts. Unter Android lässt sich der Dunkelmodus auf *Sonnenuntergang bis Sonnenaufgang* stellen – damit folgt die App dem echten Sonnenstand übers ganze Jahr. |
+| `system` | Folgt `prefers-color-scheme` des Geräts. Den Zeitplan bestimmt Android: entweder ein benutzerdefinierter mit festen Uhrzeiten (**ohne Standortfreigabe**) oder *Sonnenuntergang bis Sonnenaufgang*, wofür das Gerät den Standort braucht. Die App selbst fragt nie nach dem Standort und rechnet keinen Sonnenstand. |
 | `on` / `off` | Fest dunkel bzw. fest hell. |
 
 `auto` liest die lokale Wanduhr, die **Sommerzeitumstellung wird also
