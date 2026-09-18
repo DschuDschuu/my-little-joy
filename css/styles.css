@@ -908,3 +908,22 @@ body.night .night-times input[type="time"]{
   border-color:rgba(255,255,255,.12);
   color-scheme:dark;
 }
+
+/* ── Nachtmodus: der Schein am neuen Element ────────────── */
+
+/* Ueber der Welt liegt nachts ein brightness(.58) - das dimmt den Schein
+   genauso mit, und man sieht kaum noch, was dazugekommen ist. Das neue
+   Element bekommt deshalb ein eigenes brightness, das die Abdunklung
+   aufhebt: es leuchtet fuer einen Moment in voller Helligkeit auf,
+   waehrend der Rest der Welt dunkel bleibt. Etwas laenger als am Tag,
+   damit man es in Ruhe findet. */
+body.night .bwi.is-new{ animation:bwGlowNight 2.2s ease-out; }
+
+@keyframes bwGlowNight{
+  0%   { filter:brightness(1) drop-shadow(0 0 0 rgba(255,238,195,0)); }
+  18%  { filter:brightness(2.2) drop-shadow(0 0 10px rgba(255,240,200,1))
+                                drop-shadow(0 0 26px rgba(255,216,150,.9)); }
+  55%  { filter:brightness(1.8) drop-shadow(0 0 8px rgba(255,240,200,.75))
+                                drop-shadow(0 0 20px rgba(255,216,150,.55)); }
+  100% { filter:brightness(1) drop-shadow(0 0 0 rgba(255,238,195,0)); }
+}

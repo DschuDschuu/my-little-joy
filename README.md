@@ -202,6 +202,24 @@ Nachgezogen wird beim Start, beim Zurückkommen zur App
 (`visibilitychange`), einmal pro Minute und – im Modus `system` – sofort
 über einen `matchMedia`-Listener.
 
+**Die Statusleiste des Handys ist bewusst immer dunkel** (`theme_color` im
+Manifest, `#131d26`). Sie lässt sich bei einer installierten PWA nicht
+zuverlässig zur Laufzeit umfärben – Android übernimmt die Farbe beim
+Installieren aus dem Manifest, ein `<meta name="theme-color">` wirkt nur im
+Browser-Tab. Eine mitwandernde Farbe war deshalb nicht möglich; die Wahl
+fiel auf dauerhaft dunkel, weil eine hell leuchtende Leiste nachts stört,
+eine dunkle tagsüber aber nicht.
+Nach einer Änderung an `theme_color` aktualisiert Chrome die installierte
+App erst beim nächsten Manifest-Abgleich (bis zu etwa einem Tag) – oder
+sofort, wenn man sie neu installiert.
+Der Startbildschirm beim App-Start nutzt weiterhin `background_color`
+(`#dbecf5`, hell); das ist bislang bewusst nicht angetastet.
+
+Der Schein am neu aufgetauchten Element bekommt nachts eigene Keyframes
+(`bwGlowNight`): Über der Welt liegt ein `brightness(.58)`, das den Schein
+sonst mitdimmt. Das neue Element hebt diese Abdunklung mit einem eigenen
+`brightness` kurz auf und leuchtet dadurch wirklich heraus.
+
 Die Beach World wird dabei **mitgedimmt** (`filter: brightness(.58)`) – sonst
 wäre die Illustration nachts die einzige helle Fläche und würde genauso
 blenden wie vorher. Zwei Stellen mussten dafür extra behandelt werden, weil

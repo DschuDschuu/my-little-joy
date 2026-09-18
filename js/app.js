@@ -276,9 +276,11 @@
     var mode = Store.nightMode();
     var on = Store.isNight();
 
+    /* Die Statusleiste bleibt bewusst immer dunkel. Sie wird bei einer
+       installierten App aus dem Manifest uebernommen und laesst sich zur
+       Laufzeit nicht zuverlaessig umfaerben - eine mitwandernde Farbe
+       waere also ohnehin nur im Browser-Tab sichtbar gewesen. */
     document.body.classList.toggle('night', on);
-    var meta = $('themeColor');
-    if (meta) meta.setAttribute('content', on ? '#131d26' : '#dbecf5');
 
     Array.prototype.forEach.call($('nightSeg').querySelectorAll('button'), function (b) {
       b.classList.toggle('is-on', b.getAttribute('data-night') === mode);
